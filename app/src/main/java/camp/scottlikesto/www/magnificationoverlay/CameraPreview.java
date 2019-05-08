@@ -49,18 +49,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         if (holder.getSurface() == null) {
-            //if preview surface does not exist
             return;
         }
 
-        //stop preview before making changes
         try {
             cameraDevice.stopPreview();
         } catch (Exception e) {
             //ignore
         }
-
-        //set preview size and make any resize, rotate, or reformatting changes
 
         try {
             cameraDevice.setPreviewDisplay(holder);
