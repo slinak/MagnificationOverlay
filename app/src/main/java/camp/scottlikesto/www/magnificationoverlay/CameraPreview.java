@@ -6,21 +6,16 @@ import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
 import java.io.IOException;
-
 import static android.content.ContentValues.TAG;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback{
     static Camera cameraDevice;
     SurfaceHolder holder;
-    public ScaleView scale;
-
 
     public CameraPreview(Context context, Camera camera){
         super(context);
         cameraDevice = camera;
-        scale = new ScaleView(context);
 
         holder = getHolder();
         holder.addCallback(this);
