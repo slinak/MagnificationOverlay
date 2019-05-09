@@ -1,11 +1,10 @@
 <resources>
     <string name="app_name">MagnificationOverlay</string>
     <string-array name="magnification_resources">
-        <item>4</item>
-        <item>10</item>
-        <item>40</item>
+        <item>4x</item>
+        <item>10x</item>
+        <item>40x</item>
     </string-array>
-
     <string name="magnification_label_text">Magnification:</string>
     <string name="magnification_button_text">Set</string>
     <string name="capture_button_text">Capture</string>
