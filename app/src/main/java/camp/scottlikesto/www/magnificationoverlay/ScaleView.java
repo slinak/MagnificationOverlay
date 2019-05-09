@@ -4,7 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.SurfaceView;
 
 public class ScaleView extends SurfaceView{
@@ -33,15 +34,16 @@ public class ScaleView extends SurfaceView{
         int dx = canvas.getHeight()/3;
         int dy = canvas.getHeight()/3;
 
-        canvas.drawLine(canvas.getWidth()/4, canvas.getHeight()/5, canvas.getWidth()/2, canvas.getHeight()/5, paint);
+        canvas.drawLine(canvas.getWidth()/6, canvas.getHeight()/5, canvas.getWidth()/6 + getLineLengthFromMeasurement((float)scale.length), canvas.getHeight()/5, paint);
 
         paint.setTextSize(72);
         canvas.drawText(scale.length + scale.unit, canvas.getWidth()/4,canvas.getHeight()/4, paint );
         //canvas.drawRect(x0-dx, y0-dy, x0+dx, y0+dy, paint);
     }
 
-    public void drawLineFromMagnificiation(int magnification) {
-        paint.setColor(Color.WHITE);
-        canvas.drawLine(canvas.getWidth()/4, canvas.getHeight()/5, canvas.getWidth()/2, canvas.getHeight()/5, paint);
+    public float getLineLengthFromMeasurement(float millimeters) {
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, millimeters, getResources().getDisplayMetrics());
+        Log.w("YOYOYO", "Pixels: " + px);
+        return px;
     }
 }

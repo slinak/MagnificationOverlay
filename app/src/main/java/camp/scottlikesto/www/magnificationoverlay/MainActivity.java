@@ -1,5 +1,6 @@
 package camp.scottlikesto.www.magnificationoverlay;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -9,14 +10,30 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.SeekBar;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
+
+/*
+new Scale(4, 5, "mm")
+new Scale(10, 2, "mm")
+new Scale(40, .5, "mm")
+μ
+ */
 
 public class MainActivity extends AppCompatActivity {
     private Camera camera;
     private CameraPreview cameraPreview;
     private ScaleView scalePreview;
     private Button captureImage, setMagnification;
+    private Spinner magnificationValue;
+    private Context c;
+    private ArrayList<Scale> scales;
     FrameLayout layout;
 
 
@@ -29,21 +46,33 @@ public class MainActivity extends AppCompatActivity {
         camera = getCameraInstance();
 
         cameraPreview = new CameraPreview(this, camera);
-        scalePreview = new ScaleView(this, new Scale(10, 15, "mm"));
+        scales = new ArrayList<Scale>();
+        c = this;
 
         captureImage = (Button) findViewById(R.id.capture_image);
         setMagnification = (Button) findViewById(R.id.set_magnification);
+        magnificationValue = (Spinner) findViewById(R.id.magnification_value);
+
+        scales.add(new Scale(4, 5, "mm"));
+        scales.add(new Scale(10, 2, "mm"));
+        scales.add(new Scale(40, .5, "mm"));
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.magnification_resources, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        magnificationValue.setAdapter(adapter);
 
         layout = (FrameLayout) findViewById(R.id.screen_preview);
-        layout.addView(cameraPreview);
 
+        layout.addView(cameraPreview);
 
         setMagnification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                scalePreview = new ScaleView(c, scales.get(magnificationValue.getSelectedItemPosition()));
                 layout.addView(scalePreview);
             }
         });
+
 
         captureImage.setOnClickListener(new View.OnClickListener() {
             @Override
