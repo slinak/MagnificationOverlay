@@ -35,7 +35,6 @@
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:background="#FFFFFF"
             />
 
@@ -55,6 +54,7 @@
             android:text="@string/capture_button_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingBottom="50px"
             />
     </RelativeLayout>
 </LinearLayout>
