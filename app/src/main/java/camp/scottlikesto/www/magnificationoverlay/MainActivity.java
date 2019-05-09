@@ -1,22 +1,26 @@
 package camp.scottlikesto.www.magnificationoverlay;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
-import android.provider.MediaStore;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.SeekBar;
 import android.widget.Spinner;
-
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 /*
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private Spinner magnificationValue;
     private Context c;
     private ArrayList<Scale> scales;
+    private static final int PERMISSION_REQUEST_CODE = 200;
     FrameLayout layout;
 
 
@@ -42,10 +47,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        if (checkPermission()) {
+
+        } else {
+            requestPermission();
+        }
+
+
 
         camera = getCameraInstance();
 
         cameraPreview = new CameraPreview(this, camera);
+        cameraPreview.setKeepScreenOn(true);
         scales = new ArrayList<Scale>();
         c = this;
 
@@ -73,39 +86,85 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         captureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                camera.takePicture(null, null, null);
+                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
             }
         });
+    }
+
+    private boolean checkPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            return false;
+        }
+        return true;
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CODE);
     }
 
     public static Camera getCameraInstance() {
         Camera c = null;
         try {
             c = Camera.open(); // attempt to get a Camera instance
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Log.d(null, "Camera is not available - " + e.getMessage());
         }
         return c; // returns null if camera is unavailable
     }
 
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if(takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, 1);
-        }
+    private void refreshGallery(File file) {
+        Intent mediaScanIntent = new Intent( Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        mediaScanIntent.setData(Uri.fromFile(file));
+        sendBroadcast(mediaScanIntent);
     }
+    Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
+        public void onShutter() {
+            //			 Log.d(TAG, "onShutter'd");
+        }
+    };
+    Camera.PictureCallback rawCallback = new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+            //			 Log.d(TAG, "onPictureTaken - raw");
+        }
+    };
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            Log.d("Tag", "Within activity result");
+    Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+            new SaveImageTask().execute(data);
+            cameraPreview.resetCam();
+            Log.d("YOYOYO - YOYOYO", "onPictureTaken - jpeg");
+        }
+    };
+
+    private class SaveImageTask extends AsyncTask<byte[], Void, Void> {
+        @Override
+        protected Void doInBackground(byte[]... data) {
+            FileOutputStream outStream = null;
+
+            try {
+                File sdCard = Environment.getExternalStorageDirectory();
+                File dir = new File (sdCard.getAbsolutePath() + "/camtest");
+                dir.mkdirs();
+
+                String fileName = String.format("%d.jpg", System.currentTimeMillis());
+                File outFile = new File(dir, fileName);
+
+                outStream = new FileOutputStream(outFile);
+                outStream.write(data[0]);
+                outStream.flush();
+                outStream.close();
+
+                //Log.d("YOYOYO - YOYOYO", "onPictureTaken - wrote bytes: " + data.length + " to " + outFile.getAbsolutePath());
+
+                refreshGallery(outFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 }
