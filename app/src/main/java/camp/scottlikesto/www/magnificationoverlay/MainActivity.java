@@ -102,9 +102,9 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean checkPermission() {
         int cameraPermission = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA);
-        //int writeExternalStoragePermission = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int writeExternalStoragePermission = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        return cameraPermission == PackageManager.PERMISSION_GRANTED;// && writeExternalStoragePermission == PackageManager.PERMISSION_GRANTED;
+        return cameraPermission == PackageManager.PERMISSION_GRANTED && writeExternalStoragePermission == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
