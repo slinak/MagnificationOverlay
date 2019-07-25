@@ -5,16 +5,20 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 import java.util.ArrayList;
+
+import static android.Manifest.permission.READ_CONTACTS;
 
 //4x=0.48cm 10x=0.19cm, 40X=0.045cm
 
@@ -43,12 +47,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        if (checkPermission()) {
 
+        if (checkPermission()) {
+            startCameraPreview();
         } else {
-            requestPermission();
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
         }
 
+
+        //startCameraPreview();
+
+    }
+
+    private void startCameraPreview() {
         camera = getCameraInstance();
 
         cameraPreview = new CameraPreview(this, camera);
@@ -89,16 +100,32 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private boolean checkPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
-            return false;
-        }
-        return true;
+    public boolean checkPermission() {
+        int cameraPermission = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA);
+        //int writeExternalStoragePermission = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        return cameraPermission == PackageManager.PERMISSION_GRANTED;// && writeExternalStoragePermission == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void requestPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CODE);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.w("YOYOYO", "Grant Results Length: " + grantResults.length);
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0) {
+                    boolean cameraPermission = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    boolean writeExternalStoragePermission = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+
+                    if (cameraPermission && writeExternalStoragePermission ) {
+                        startCameraPreview();
+                    }
+                    else {
+                        //do nothing atm
+                    }
+                }
+                break;
+        }
     }
 
     public static Camera getCameraInstance() {
@@ -110,10 +137,4 @@ public class MainActivity extends AppCompatActivity {
         }
         return c;
     }
-
-
-
-
-
-
 }
