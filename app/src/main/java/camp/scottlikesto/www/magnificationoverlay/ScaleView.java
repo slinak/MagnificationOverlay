@@ -13,6 +13,8 @@ public class ScaleView extends SurfaceView{
 
     private Paint halfLine = new Paint(), mainHorizontalLine = new Paint(), endLine = new Paint();
 
+
+
     private Canvas canvas;
     private Scale scale;
 
@@ -56,9 +58,16 @@ public class ScaleView extends SurfaceView{
         //draw line at half point of mainLine
         canvas.drawLine((x0 + dx/2), y0 + dy/2, (x0 + dx/2), y0 - dy/2, halfLine);
 
+        //draw line divisor segments
+        canvas.drawLine((x0 + dx/4), y0 + dy/2, (x0 + dx/4), y0 - dy/2, halfLine);
+
+        canvas.drawLine((x0 + (dx/2 + dx/4)), y0 + dy/2, (x0 + (dx/2 + dx/4)), y0 - dy/2, halfLine);
+
+
+
+        //write scale text onto view
         mainHorizontalLine.setTextSize(72);
-        canvas.drawText(scale.length + scale.unit, canvas.getWidth()/4,canvas.getHeight()/4, mainHorizontalLine );
-        //canvas.drawRect(x0-dx, y0-dy, x0+dx, y0+dy, paint);
+        canvas.drawText(scale.length + scale.unit, x0, y0 - dy, mainHorizontalLine );
     }
 
     public int getLineLengthFromMeasurement(float millimeters) {

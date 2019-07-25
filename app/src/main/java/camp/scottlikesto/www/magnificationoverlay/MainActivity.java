@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         scales.add(new Scale(4, 48, "mm"));
         scales.add(new Scale(10, 19, "mm"));
-        scales.add(new Scale(40, .5, "mm"));
+        scales.add(new Scale(40, 4.5, "mm"));
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.magnification_resources, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
