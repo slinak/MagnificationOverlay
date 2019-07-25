@@ -74,7 +74,17 @@ public class MainActivity extends AppCompatActivity {
         setMagnification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //pretty terrible hack to ensure any previously drawn scaleViews are deleted
+                try {
+                    ScaleView oldView = layout.findViewById(R.id.scale_view_id);
+                    layout.removeView(oldView);
+                } catch (Exception e) {
+                    Log.w("YOYOYO", "Exception: " + e.getMessage());
+                }
+
                 scalePreview = new ScaleView(c, scales.get(magnificationValue.getSelectedItemPosition()));
+                scalePreview.setId(R.id.scale_view_id);
+                scalePreview.setZOrderOnTop(true);
 
                 layout.addView(scalePreview);
             }

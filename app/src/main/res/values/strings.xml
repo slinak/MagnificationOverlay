@@ -8,4 +8,5 @@
     <string name="magnification_label_text">Magnification:</string>
     <string name="magnification_button_text">Set</string>
     <string name="capture_button_text">Capture</string>
+    <item name="scale_view_id" type="id"/>
 </resources>

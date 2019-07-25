@@ -9,12 +9,7 @@ import android.util.TypedValue;
 import android.view.SurfaceView;
 
 public class ScaleView extends SurfaceView{
-    private int magnification;
-
     private Paint halfLine = new Paint(), mainHorizontalLine = new Paint(), endLine = new Paint();
-
-
-
     private Canvas canvas;
     private Scale scale;
 
@@ -28,8 +23,6 @@ public class ScaleView extends SurfaceView{
     protected void onDraw(Canvas _canvas) {
         canvas = _canvas;
         super.onDraw(canvas);
-
-
 
         mainHorizontalLine.setStyle(Paint.Style.STROKE);
         mainHorizontalLine.setColor(Color.RED);
@@ -61,7 +54,7 @@ public class ScaleView extends SurfaceView{
         //draw line divisor segments
         canvas.drawLine((x0 + dx/4), y0 + dy/2, (x0 + dx/4), y0 - dy/2, halfLine);
         canvas.drawLine((x0 + (dx/2 + dx/4)), y0 + dy/2, (x0 + (dx/2 + dx/4)), y0 - dy/2, halfLine);
-        
+
         //write scale text onto view
         mainHorizontalLine.setTextSize(72);
         canvas.drawText(scale.length + scale.unit, x0, y0 - dy, mainHorizontalLine );
