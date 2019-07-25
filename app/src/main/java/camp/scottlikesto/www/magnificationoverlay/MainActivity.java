@@ -22,14 +22,6 @@ import static android.Manifest.permission.READ_CONTACTS;
 
 //4x=0.48cm 10x=0.19cm, 40X=0.045cm
 
-/*
-        scales.add(new Scale(4, 5, "mm"));
-        scales.add(new Scale(10, 2, "mm"));
-        scales.add(new Scale(40, .5, "mm"));
-
-
- */
-
 public class MainActivity extends AppCompatActivity {
     private Camera camera;
     private CameraPreview cameraPreview;
@@ -53,10 +45,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
         }
-
-
-        //startCameraPreview();
-
     }
 
     private void startCameraPreview() {
@@ -71,9 +59,9 @@ public class MainActivity extends AppCompatActivity {
         setMagnification = (Button) findViewById(R.id.set_magnification);
         magnificationValue = (Spinner) findViewById(R.id.magnification_value);
 
-        scales.add(new Scale(4, 48, "mm"));
-        scales.add(new Scale(10, 19, "mm"));
-        scales.add(new Scale(40, 4.5, "mm"));
+        scales.add(new Scale(4, 480, "mm"));
+        scales.add(new Scale(10, 190, "mm"));
+        scales.add(new Scale(40, 45, "mm"));
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.magnification_resources, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
