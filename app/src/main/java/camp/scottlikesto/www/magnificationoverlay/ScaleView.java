@@ -62,6 +62,7 @@ public class ScaleView extends SurfaceView{
 
     public int getLineLengthFromMeasurement(float millimeters) {
         int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, millimeters, getResources().getDisplayMetrics());
+        Log.w("YOYOYO", "Display Metrics: " + getResources().getDisplayMetrics());
         Log.w("YOYOYO", "Pixels: " + px);
         return px;
     }

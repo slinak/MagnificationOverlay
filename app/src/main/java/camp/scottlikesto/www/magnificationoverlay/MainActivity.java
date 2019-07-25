@@ -22,6 +22,14 @@ import static android.Manifest.permission.READ_CONTACTS;
 
 //4x=0.48cm 10x=0.19cm, 40X=0.045cm
 
+/*
+DisplayMetrics{density=2.75, width=2028, height=1080, scaledDensity=2.75, xdpi=440.0, ydpi=440.0}
+
+1dpi = 1px = 25.4mm
+
+2.75dpi = 1px = 9.24mm
+ */
+
 public class MainActivity extends AppCompatActivity {
     private Camera camera;
     private CameraPreview cameraPreview;
