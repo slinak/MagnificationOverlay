@@ -4,18 +4,29 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.hardware.Camera;
+import android.os.Build;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.PixelCopy;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -101,9 +112,71 @@ public class MainActivity extends AppCompatActivity {
         captureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                camera.takePicture(cameraPreview.shutterCallback, cameraPreview.rawCallback, cameraPreview.jpegCallback);
+                takePicture();
+
+
             }
         });
+    }
+
+    private void takePicture() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            final HandlerThread handler = new HandlerThread("PixelCopier");
+            handler.start();
+            String fileName = generateFilename();
+
+            final Bitmap bitmap = Bitmap.createBitmap(cameraPreview.getWidth(), cameraPreview.getHeight(), Bitmap.Config.ARGB_8888);
+
+            PixelCopy.request(getWindow(), bitmap, (copyResult) -> {
+                if (copyResult == PixelCopy.SUCCESS) {
+                    try {
+                        processBitmapToFile(bitmap, fileName);
+                    } catch (IOException e) {
+                        Log.w("YOYOYO", "IOException: " + e.getMessage());
+                        return;
+                    }
+                } else {
+                    Log.w("YOYOYO", "Failed to CopyPixels");
+                }
+                handler.quitSafely();
+            }, new Handler(handler.getLooper()));
+            /*
+            PixelCopy.request(cameraPreview, bitmap, (copyResult) -> {
+                if (copyResult == PixelCopy.SUCCESS) {
+                    try {
+                        processBitmapToFile(bitmap, fileName);
+                    } catch (IOException e) {
+                        Log.w("YOYOYO", "IOException: " + e.getMessage());
+                        return;
+                    }
+                } else {
+                    Log.w("YOYOYO", "Failed to CopyPixels");
+                }
+                handler.quitSafely();
+            }, new Handler(handler.getLooper()));
+            */
+        }
+    }
+
+    private void processBitmapToFile(Bitmap bitmap, String filename) throws IOException {
+        File out = new File(filename);
+        if (!out.getParentFile().exists()) {
+            out.getParentFile().mkdirs();
+        }
+
+        try (FileOutputStream outStream = new FileOutputStream(filename)) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+            outStream.flush();
+            outStream.close();
+            Log.w("YOYOYO", "Filename: " + filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String generateFilename() {
+        return Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES) + File.separator + "MagnificationOverlay/" + String.format("%d.jpg", System.currentTimeMillis()) + "_screenshot.jpg";
     }
 
     public boolean checkPermission() {
